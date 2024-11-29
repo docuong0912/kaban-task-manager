@@ -19,8 +19,8 @@ export class GenericRepository<T extends BaseEntity> implements IGenericReposito
     const data = this.model.create(dto);
     return data;
   }
-  async updateAync(filter: object, dto: Partial<T> | any): Promise<T> {
-    return await this.model.findOneAndUpdate(filter, { ...dto, lastSavedTime: Date.now }, { new: true });
+  async updateAync(filter: object, dto: Partial<T> | any): Promise<void> {
+    await this.model.updateOne(filter, { ...dto, lastSavedTime: Date.now() });
   }
   async removeAsync(id: ObjectId): Promise<boolean> {
     return !!(await this.model.findByIdAndUpdate(id, { isDeleted: true }).exec());
