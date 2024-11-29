@@ -1,4 +1,4 @@
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { BaseEntity } from 'src/domain/base/Base.entity';
 import { IGenericRepository } from 'src/interfaces/IGenericRepositories.interface';
 export class GenericRepository<T extends BaseEntity> implements IGenericRepository<T> {
@@ -11,15 +11,13 @@ export class GenericRepository<T extends BaseEntity> implements IGenericReposito
   async getAll(): Promise<T[]> {
     return this.model.find({ isDeleted: false });
   }
-  async getById(id: ObjectId): Promise<T> {
-    return this.model.findOne({ _id: id });
+  async getById(id: string): Promise<T> {
+    const objectId = new Types.ObjectId(id);
+    return this.model.findOne({ _id: objectId });
   }
   async addAsync(dto: T | any): Promise<T> {
     const data = this.model.create(dto);
     return data;
-  }
-  async addRangeAsync(dto: T[] | any): Promise<T[]> {
-    return await this.model.insertMany(dto);
   }
   async updateAync(filter: object, dto: Partial<T> | any): Promise<T> {
     return await this.model.findOneAndUpdate(filter, { ...dto, lastSavedTime: Date.now }, { new: true });
